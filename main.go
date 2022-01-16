@@ -21,10 +21,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Endpoint for evm rpc requests
 var infura = "https://rinkeby.infura.io/v3/c75f2ce78a4a4b64aa1e9c20316fda3e"
 var client, clientConnectErr = ethclient.Dial(infura)
+// A simple ERC-20 token on the testnet
 var contractAccount = common.HexToAddress("0x2fF8D8A0E5D8e3cf34aa490aBfD8F365e1F77F0d")
+// Private key on the server side For GD-3 (use case 8)
 var privateKey, _ = crypto.HexToECDSA("6e97855fb478f18012146750022a417cb46dddc9814f6c46a22b34b71a2d0074")
+// user's address associated with the hero id
 var clientAddress = common.HexToAddress("0x24d13b65bAbFc38f6eCA86D9e73C539a1e0C0196")
 
 type Hero struct {
@@ -58,8 +62,13 @@ func setupRouter() *gin.Engine {
 	// gin.DisableConsoleColor()
 	r := gin.Default()
 
-	// Ping test
-	r.GET("/save/hero/:id", func(c *gin.Context) {
+	// GD-3: Fetch the hero data based on its ID and return the transaction to be signed.
+	r.GET("/hero/:id", func(c *gin.Context) {
+		// in this example, we don't have backend database, the desired actions should be 
+		// 1) check if the id exists in db
+		// 2) fetch the clientAddress associate with this id
+		// 3) prepare the transaction to be signed by the users to update the properties of NFT heros.
+		
 		if clientConnectErr != nil {
 			log.Fatal(clientConnectErr)
 		}
@@ -81,6 +90,9 @@ func setupRouter() *gin.Engine {
 		}
 	})
 
+	// GD-2: Verify message and signature, if passed, bind this address to user's table
+	// Input: message and signature
+	// Output: Users' address
 	r.POST("/account/verification/address", func(c *gin.Context) {
 		var input SignatureCheckInput
 		if err := c.ShouldBindJSON(&input); err != nil {
@@ -89,15 +101,16 @@ func setupRouter() *gin.Engine {
 		}
 
 		data := []byte(input.Message)
-
+		
+		// Verify the Signature and message, if passed, return pub key
 		sigPublicKey := getAddrFromSign(input.Signature, data)
-
+		// Convert pub key to address
 		address := string(sigPublicKey)
 
 		// add address to a database
-
 		output := &SignatureCheckOutput{Address: address}
 
+		// return address
 		payloadStr, err := json.Marshal(output)
 		if err == nil {
 			c.Data(http.StatusOK, gin.MIMEJSON, payloadStr)
