@@ -77,7 +77,7 @@ func setupRouter() *gin.Engine {
 
 		payloadStr, err := json.Marshal(payload)
 		if err == nil {
-			c.Data(http.StatusOK, "application/json", payloadStr)
+			c.Data(http.StatusOK, gin.MIMEJSON, payloadStr)
 		}
 	})
 
@@ -92,13 +92,15 @@ func setupRouter() *gin.Engine {
 
 		sigPublicKey := getAddrFromSign(input.Signature, data)
 
-		output := &SignatureCheckOutput{Address: string(sigPublicKey)}
+		address := string(sigPublicKey)
 
 		// add address to a database
 
+		output := &SignatureCheckOutput{Address: address}
+
 		payloadStr, err := json.Marshal(output)
 		if err == nil {
-			c.Data(http.StatusOK, "application/json", payloadStr)
+			c.Data(http.StatusOK, gin.MIMEJSON, payloadStr)
 		}
 	})
 
