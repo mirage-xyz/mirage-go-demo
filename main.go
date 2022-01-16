@@ -21,7 +21,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var db = make(map[string]string)
 var infura = "https://rinkeby.infura.io/v3/c75f2ce78a4a4b64aa1e9c20316fda3e"
 var client, clientConnectErr = ethclient.Dial(infura)
 var contractAccount = common.HexToAddress("0x2fF8D8A0E5D8e3cf34aa490aBfD8F365e1F77F0d")
@@ -64,7 +63,6 @@ func setupRouter() *gin.Engine {
 		if clientConnectErr != nil {
 			log.Fatal(clientConnectErr)
 		}
-		fmt.Print("Connect!")
 
 		parsedAbi, _ := abi.JSON(strings.NewReader(ERC20.ERC20ABI))
 		bytesData, _ := parsedAbi.Pack("mint")
@@ -79,7 +77,7 @@ func setupRouter() *gin.Engine {
 
 		payloadStr, err := json.Marshal(payload)
 		if err == nil {
-			c.JSON(http.StatusOK, string(payloadStr))
+			c.Data(http.StatusOK, "application/json", payloadStr)
 		}
 	})
 
@@ -100,7 +98,7 @@ func setupRouter() *gin.Engine {
 
 		payloadStr, err := json.Marshal(output)
 		if err == nil {
-			c.JSON(http.StatusOK, string(payloadStr))
+			c.Data(http.StatusOK, "application/json", payloadStr)
 		}
 	})
 
