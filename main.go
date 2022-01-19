@@ -84,32 +84,32 @@ var domainStandard = apitypes.TypedDataDomain{
 }
 
 type Item struct {
-	itemType int `json: itemType`
-	strength int `json: strength`
-	level    int `json: level`
+	itemType int `json:"itemType"`
+	strength int `json:"strength"`
+	level    int `json:"level"`
 }
 
 type ItemInfo struct {
-	tokenId    string `json: tokenId`
-	itemType   int    `json: itemType`
-	strength   int    `json: strength`
-	level      int    `json: level`
-	expireTime int    `json: expireTime`
-	signature  string `json: signature`
+	TokenId    string `json:"tokenId"`
+	ItemType   int    `json:"itemType"`
+	Strength   int    `json:"strength"`
+	Level      int    `json:"level"`
+	ExpireTime int    `json:"expireTime"`
+	Signature  string `json:"signature"`
 }
 
 type Payload struct {
-	hero      ItemInfo `json: hero`
-	signature string   `json: signature`
+	hero      ItemInfo `json:"hero"`
+	signature string   `json:"signature"`
 }
 
 type SignatureCheckInput struct {
-	Signature string `json: "signature"`
-	Message   string `json: "message"`
+	Signature string `json:"signature"`
+	Message   string `json:"message"`
 }
 
 type SignatureCheckOutput struct {
-	Address string `json: "address"`
+	Address string `json:"address"`
 }
 
 func main() {
@@ -159,10 +159,10 @@ func setupRouter() *gin.Engine {
 		// ExternalAPI.SignTypedData(context.Background(), a, typedData)
 
 		hero := &ItemInfo{
-			tokenId:  id,
-			itemType: 1,
-			strength: 10,
-			level:    15,
+			TokenId:  id,
+			ItemType: 1,
+			Strength: 10,
+			Level:    15,
 		}
 
 		// r, s, v := signedTx.RawSignatureValues()
