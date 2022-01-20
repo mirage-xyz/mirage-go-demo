@@ -25,7 +25,7 @@ var infura = "https://rinkeby.infura.io/v3/c75f2ce78a4a4b64aa1e9c20316fda3e"
 var client, clientConnectErr = ethclient.Dial(infura)
 
 // A simple ERC-20 token on the testnet
-var contractAccount = "0xb48366c616c7Ce992981cFB354301Da161687855"
+var contractAccount = "0x159D0A933137f3EC155f43834BDFCd534A8bfd61"
 
 var privateKeyString = "6e97855fb478f18012146750022a417cb46dddc9814f6c46a22b34b71a2d0074"
 
@@ -90,10 +90,11 @@ func setupRouter() *gin.Engine {
 		id, _ := strconv.ParseInt(idParam, 10, 64)
 
 		hero := &ItemInfo{
-			TokenId:  id,
-			ItemType: 1,
-			Strength: 10,
-			Level:    15,
+			TokenId:    id,
+			ItemType:   1,
+			Strength:   10,
+			Level:      15,
+			ExpireTime: 200,
 		}
 
 		hero.Signature = generateSignature(*hero)
