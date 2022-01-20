@@ -27,7 +27,7 @@ var client, clientConnectErr = ethclient.Dial(infura)
 // A simple ERC-20 token on the testnet
 var contractAccount = "0x159D0A933137f3EC155f43834BDFCd534A8bfd61"
 
-var privateKeyString = "6e97855fb478f18012146750022a417cb46dddc9814f6c46a22b34b71a2d0074"
+var privateKeyString = "a0022ef0d495da2ad7e639f9d93045661f149f31472cedf067a0712b391749df"
 
 // Private key on the server side For GD-3 (use case 8)
 var privateKey, _ = crypto.HexToECDSA(privateKeyString)
