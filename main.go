@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/big"
 	"net/http"
+	"strconv"
 
 	"fmt"
 
@@ -14,7 +15,8 @@ import (
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/signer/core/apitypes"
+	cryptoTyped "github.com/ethersphere/bee/pkg/crypto"
+	eip712 "github.com/ethersphere/bee/pkg/crypto/eip712"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,65 +25,15 @@ var infura = "https://rinkeby.infura.io/v3/c75f2ce78a4a4b64aa1e9c20316fda3e"
 var client, clientConnectErr = ethclient.Dial(infura)
 
 // A simple ERC-20 token on the testnet
-var contractAccount = common.HexToAddress("0xb48366c616c7Ce992981cFB354301Da161687855")
+var contractAccount = "0xb48366c616c7Ce992981cFB354301Da161687855"
+
+var privateKeyString = "6e97855fb478f18012146750022a417cb46dddc9814f6c46a22b34b71a2d0074"
 
 // Private key on the server side For GD-3 (use case 8)
-var privateKey, _ = crypto.HexToECDSA("6e97855fb478f18012146750022a417cb46dddc9814f6c46a22b34b71a2d0074")
+var privateKey, _ = crypto.HexToECDSA(privateKeyString)
 
 // user's address associated with the hero id
 var clientAddress = common.HexToAddress("0x24d13b65bAbFc38f6eCA86D9e73C539a1e0C0196")
-
-var typesStandard = apitypes.Types{
-	"EIP712Domain": {
-		{
-			Name: "name",
-			Type: "string",
-		},
-		{
-			Name: "version",
-			Type: "string",
-		},
-		{
-			Name: "chainId",
-			Type: "uint256",
-		},
-		{
-			Name: "verifyingContract",
-			Type: "address",
-		},
-	},
-	"ItemInfo": {
-		{
-			Name: "tokenId",
-			Type: "uint256",
-		},
-		{
-			Name: "itemType",
-			Type: "uint256",
-		},
-		{
-			Name: "strength",
-			Type: "uint256",
-		},
-		{
-			Name: "level",
-			Type: "uint256",
-		},
-		{
-			Name: "expireTime",
-			Type: "uint256",
-		},
-	},
-}
-
-const primaryType = "ItemInfo"
-
-var domainStandard = apitypes.TypedDataDomain{
-	Name:              "GameItem",
-	Version:           "1",
-	ChainId:           math.NewHexOrDecimal256(4),
-	VerifyingContract: contractAccount.String(),
-}
 
 type Item struct {
 	itemType int `json:"itemType"`
@@ -90,11 +42,11 @@ type Item struct {
 }
 
 type ItemInfo struct {
-	TokenId    string `json:"tokenId"`
-	ItemType   int    `json:"itemType"`
-	Strength   int    `json:"strength"`
-	Level      int    `json:"level"`
-	ExpireTime int    `json:"expireTime"`
+	TokenId    int64  `json:"tokenId"`
+	ItemType   int64  `json:"itemType"`
+	Strength   int64  `json:"strength"`
+	Level      int64  `json:"level"`
+	ExpireTime int64  `json:"expireTime"`
 	Signature  string `json:"signature"`
 }
 
@@ -129,7 +81,7 @@ func setupRouter() *gin.Engine {
 		// 1) check if the id exists in db
 		// 2) fetch the clientAddress associate with this id
 		// 3) prepare the transaction to be signed by the users to update the properties of NFT heros.
-		id := c.Params.ByName("id")
+		idParam := c.Params.ByName("id")
 
 		if clientConnectErr != nil {
 			log.Fatal(clientConnectErr)
@@ -158,6 +110,8 @@ func setupRouter() *gin.Engine {
 
 		// ExternalAPI.SignTypedData(context.Background(), a, typedData)
 
+		id, _ := strconv.ParseInt(idParam, 10, 64)
+
 		hero := &ItemInfo{
 			TokenId:  id,
 			ItemType: 1,
@@ -165,10 +119,8 @@ func setupRouter() *gin.Engine {
 			Level:    15,
 		}
 
-		// r, s, v := signedTx.RawSignatureValues()
-		// payload := &Payload{hero: *hero, signature: signatureToHex(r, s, v)}
+		hero.Signature = generateSignature(*hero)
 
-		// payloadStr, err := json.Marshal(payload)
 		payloadStr, err := json.Marshal(hero)
 		if err == nil {
 			c.Data(http.StatusOK, gin.MIMEJSON, payloadStr)
@@ -231,6 +183,87 @@ func signHash(data []byte) []byte {
 	return crypto.Keccak256([]byte(msg))
 }
 
-func signTypedData() {
+func generateSignature(itemInfo ItemInfo) string {
+	pData, err := hex.DecodeString(privateKeyString)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	privKey, err := cryptoTyped.DecodeSecp256k1PrivateKey(pData)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	signer := cryptoTyped.NewDefaultSigner(privKey)
+
+	var EIP712DomainType = []eip712.Type{
+		{
+			Name: "name",
+			Type: "string",
+		},
+		{
+			Name: "version",
+			Type: "string",
+		},
+		{
+			Name: "chainId",
+			Type: "uint256",
+		},
+		{
+			Name: "verifyingContract",
+			Type: "address",
+		},
+	}
+
+	var EIP712Types = []eip712.Type{
+		{
+			Name: "tokenId",
+			Type: "uint256",
+		},
+		{
+			Name: "itemType",
+			Type: "uint256",
+		},
+		{
+			Name: "strength",
+			Type: "uint256",
+		},
+		{
+			Name: "level",
+			Type: "uint256",
+		},
+		{
+			Name: "expireTime",
+			Type: "uint256",
+		},
+	}
+
+	var typeData = eip712.TypedData{
+		Domain: eip712.TypedDataDomain{
+			Name:              "GameItem",
+			Version:           "1",
+			ChainId:           math.NewHexOrDecimal256(4), // this should be changed for contract
+			VerifyingContract: "contractAccount",          // this should be changed for contract
+		},
+		Types: eip712.Types{
+			"EIP712Domain": EIP712DomainType,
+			"ItemInfo":     EIP712Types,
+		},
+		PrimaryType: "ItemInfo",
+		Message: eip712.TypedDataMessage{
+			"tokenId":    math.NewHexOrDecimal256(itemInfo.TokenId),
+			"itemType":   math.NewHexOrDecimal256(itemInfo.ItemType),
+			"strength":   math.NewHexOrDecimal256(itemInfo.Strength),
+			"level":      math.NewHexOrDecimal256(itemInfo.Level),
+			"expireTime": math.NewHexOrDecimal256(itemInfo.ExpireTime),
+		},
+	}
+
+	var signature, err2 = signer.SignTypedData(&typeData)
+	if err2 != nil {
+		log.Fatalf("SignTypedData error %v", err2)
+		return ""
+	} else {
+		return "0x" + common.Bytes2Hex(signature)
+	}
 }
