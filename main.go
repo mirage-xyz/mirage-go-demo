@@ -47,7 +47,7 @@ type ItemInfo struct {
 	Strength   int64  `json:"strength"`
 	Level      int64  `json:"level"`
 	ExpireTime int64  `json:"expireTime"`
-	Signature  string `json:"signature"`
+	Signature  []byte `json:"signature"`
 }
 
 type Payload struct {
@@ -161,7 +161,7 @@ func signHash(data []byte) []byte {
 	return crypto.Keccak256([]byte(msg))
 }
 
-func generateSignature(itemInfo ItemInfo) string {
+func generateSignature(itemInfo ItemInfo) []byte {
 	pData, err := hex.DecodeString(privateKeyString)
 	if err != nil {
 		log.Fatal(err)
@@ -240,8 +240,6 @@ func generateSignature(itemInfo ItemInfo) string {
 	var signature, err2 = signer.SignTypedData(&typeData)
 	if err2 != nil {
 		log.Fatalf("SignTypedData error %v", err2)
-		return ""
-	} else {
-		return "0x" + common.Bytes2Hex(signature)
 	}
+	return signature
 }
