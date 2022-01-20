@@ -94,7 +94,7 @@ func setupRouter() *gin.Engine {
 			ItemType:   1,
 			Strength:   10,
 			Level:      15,
-			ExpireTime: 200,
+			ExpireTime: 1642739319576,
 		}
 
 		hero.Signature = generateSignature(*hero)
