@@ -24,9 +24,10 @@ import (
 var infura = "https://rinkeby.infura.io/v3/c75f2ce78a4a4b64aa1e9c20316fda3e"
 var client, clientConnectErr = ethclient.Dial(infura)
 
-// A simple ERC-20 token on the testnet
+// Simple ERC721 contract with methods to update nft fields and signature verification mechanism
 var contractAccount = "0x159D0A933137f3EC155f43834BDFCd534A8bfd61"
 
+// Private key should belong to account that deployed contract
 var privateKeyString = "a0022ef0d495da2ad7e639f9d93045661f149f31472cedf067a0712b391749df"
 
 // Private key on the server side For GD-3 (use case 8)
