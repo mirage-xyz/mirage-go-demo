@@ -87,29 +87,6 @@ func setupRouter() *gin.Engine {
 			log.Fatal(clientConnectErr)
 		}
 
-		// parsedAbi, _ := abi.JSON(strings.NewReader(ERC20.ERC20ABI))
-		// bytesData, _ := parsedAbi.Pack("mint")
-		// nonce, _ := client.NonceAt(context.Background(), clientAddress, nil)
-		// tx := types.NewTransaction(nonce, clientAddress, nil, big.NewInt(10000000).Uint64(), big.NewInt(0), bytesData)
-		// signedTx, _ := types.SignTx(tx, types.HomesteadSigner{}, privateKey)
-
-		// messageStandard := map[string]interface{}{
-		// 	"tokenId":    "",
-		// 	"itemType":   "",
-		// 	"strength":   "",
-		// 	"level":      "",
-		// 	"expireTime": "",
-		// }
-
-		// typedData := apitypes.TypedData{
-		// 	Types:       typesStandard,
-		// 	PrimaryType: primaryType,
-		// 	Domain:      domainStandard,
-		// 	Message:     messageStandard,
-		// }
-
-		// ExternalAPI.SignTypedData(context.Background(), a, typedData)
-
 		id, _ := strconv.ParseInt(idParam, 10, 64)
 
 		hero := &ItemInfo{
@@ -243,7 +220,7 @@ func generateSignature(itemInfo ItemInfo) string {
 			Name:              "GameItem",
 			Version:           "1",
 			ChainId:           math.NewHexOrDecimal256(4), // this should be changed for contract
-			VerifyingContract: "contractAccount",          // this should be changed for contract
+			VerifyingContract: contractAccount,            // this should be changed for contract
 		},
 		Types: eip712.Types{
 			"EIP712Domain": EIP712DomainType,
