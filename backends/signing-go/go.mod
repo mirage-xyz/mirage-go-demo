@@ -1,4 +1,4 @@
-module yartu.io/test
+module mirage-xyz/demo/signing-go
 
 go 1.17
 
