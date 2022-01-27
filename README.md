@@ -1,20 +1,7 @@
-# Go lang backend example for unity plugin
+# Example Backend Projects for "Mirage Unity / Unreal SDK"
 
-### Installation
+### Backends
+**signing-go** - Golang example for sign transaction at backend.
 
-1. Install go lang (see [instruction](https://go.dev/doc/install))
-2. Clone repository
-```bash
-$ git clone git@github.com:mirage-xyz/mirage-go-sdk.git
-$ cd mirage-go-sdk
-```
-3. Install dependencies
-```bash
-$ go build
-```
-4. Deploy server
-```bash
-$ go run main.go
-```
-
-Pay attention that go lang need [GCC](https://gcc.gnu.org/install/) for work.
+### Contracts
+**GameItem.sol** - ERC721 contract that mintable with signed transaction from backend.

@@ -25,6 +25,7 @@ var infura = "https://rinkeby.infura.io/v3/c75f2ce78a4a4b64aa1e9c20316fda3e"
 var client, clientConnectErr = ethclient.Dial(infura)
 
 // Simple ERC721 contract with methods to update nft fields and signature verification mechanism
+// For this demo use contract in "contracts/GameItem.sol"
 var contractAccount = "0x159D0A933137f3EC155f43834BDFCd534A8bfd61"
 
 // Private key should belong to account that deployed contract
