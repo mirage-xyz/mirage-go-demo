@@ -1,0 +1,10 @@
+{
+  "name": "signing-node",
+  "version": "1.0.0",
+  "description": "An example solidity contract and node.js app to sign typed data",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "ethers": "5.3.1"
+  }
+}
