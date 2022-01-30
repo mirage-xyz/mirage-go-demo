@@ -22,10 +22,10 @@ var rpcEndpoint = "https://rinkeby.infura.io/v3/c75f2ce78a4a4b64aa1e9c20316fda3e
 
 // ERC721 contract for tracking
 // For this demo use contract in "contracts/GameCharacter.sol"
-var contractAddress = common.HexToAddress("0x976d91f3ec4017db4b17b19a35e4862b5f7ed8c4")
+var contractAddress = common.HexToAddress("0x2B074Cb14109A7C8635Ca6934623dAf20d975ef7")
 
 // Blocknumber of starting to track events
-var startBlock = int64(10018020)
+var startBlock = int64(10081500)
 
 func convertToType(val interface{}, t abi.Type) (interface{}, error) {
 	switch t.T {
