@@ -15,6 +15,7 @@ require (
 	github.com/ethereum/go-ethereum v1.10.11 // indirect
 	github.com/ethersphere/bee v1.4.1 // indirect
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
+	github.com/gin-contrib/cors v1.3.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
