@@ -69,11 +69,9 @@ contract GameItem is ERC721, ERC721Enumerable, Pausable, AccessControl, ERC721Bu
         address signer = _verifyItemInfo(itemInfo);
         require(hasRole(MINTER_ROLE, signer), "Signature invalid");
         require(itemInfo.expireTime > block.timestamp, "Voucher expired");
+        require(_exists(itemInfo.tokenId) == false, "Token already exists");
 
-        uint256 tokenId = tokenIdCounter.current();
-        tokenIdCounter.increment();
-        _safeMint(to, tokenId);
-        tokenDetails[tokenId] = Item(itemInfo.itemType, itemInfo.strength, itemInfo.level);
+        tokenDetails[itemInfo.tokenId] = Item(itemInfo.itemType, itemInfo.strength, itemInfo.level);
     }
 
     // update token with a signed message coming from a updater
